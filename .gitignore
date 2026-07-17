@@ -1,0 +1,68 @@
+# ===========================
+# Build folders
+# ===========================
+bin/
+obj/
+
+# ===========================
+# Visual Studio
+# ===========================
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# ===========================
+# Rider / VS Code
+# ===========================
+.idea/
+.vscode/
+
+# ===========================
+# NuGet
+# ===========================
+packages/
+*.nupkg
+
+# ===========================
+# Logs
+# ===========================
+*.log
+
+# ===========================
+# OS Files
+# ===========================
+.DS_Store
+Thumbs.db
+
+# ===========================
+# Environment & Secrets
+# ===========================
+.env
+.env.*
+appsettings.Development.json
+secrets.json
+
+# Ignore local secrets (keep template)
+appsettings.json
+!appsettings.example.json
+
+# ===========================
+# Publish
+# ===========================
+publish/
+
+# ===========================
+# Test Results
+# ===========================
+TestResults/
+*.trx
+
+# ===========================
+# Coverage
+# ===========================
+coverage/
+coverage.*
+*.coverage
+*.coveragexml
