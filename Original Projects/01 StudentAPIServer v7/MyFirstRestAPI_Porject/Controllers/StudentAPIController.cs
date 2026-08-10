@@ -6,10 +6,10 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace StudentApi.Controllers 
 {
+    [Authorize]
     [ApiController] // Marks the class as a Web API controller with enhanced features.
-  //  [Route("[controller]")] // Sets the route for this controller to "students", based on the controller name.
+     //  [Route("[controller]")] // Sets the route for this controller to "students", based on the controller name.
     [Route("api/Students")]
-
     public class StudentsController : ControllerBase // Declare the controller class inheriting from ControllerBase.
     {
 
