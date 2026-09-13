@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc; 
 using StudentApi.Models;
 using StudentApi.DataSimulation;
-using System.Collections.Generic;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 
 namespace StudentApi.Controllers 
@@ -70,12 +70,10 @@ namespace StudentApi.Controllers
 
 
         [HttpGet("{id}", Name = "GetStudentById")]
-        
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-
-        public ActionResult<Student> GetStudentById(int id)
+        public async Task<ActionResult<Student>> GetStudentById(int id, [FromServices] IAuthorizationService authorizationService)
         {
 
             if (id < 1)
@@ -83,10 +81,18 @@ namespace StudentApi.Controllers
                 return BadRequest($"Not accepted ID {id}");
             }
 
+
             var student = StudentDataSimulation.StudentsList.FirstOrDefault(s => s.Id == id);
             if (student == null)
             {
                 return NotFound($"Student with ID {id} not found.");
+            }
+
+            var authorizeResult =await authorizationService.AuthorizeAsync(this.User, id, "StudentOwnerOrAdmin");
+            
+            if(!authorizeResult.Succeeded)
+            {
+                return Forbid(); //403
             }
 
             return Ok(student);
