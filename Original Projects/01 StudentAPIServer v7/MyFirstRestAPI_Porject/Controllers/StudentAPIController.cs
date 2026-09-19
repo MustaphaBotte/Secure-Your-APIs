@@ -12,8 +12,12 @@ namespace StudentApi.Controllers
     [Route("api/Students")]
     public class StudentsController : ControllerBase // Declare the controller class inheriting from ControllerBase.
     {
+        private readonly ILogger<StudentsController> _logger;
+        public StudentsController(ILogger<StudentsController> logger)
+        {
+            _logger = logger;
+        }
 
-        
         [HttpGet("All", Name ="GetAllStudents")] // Marks this method to respond to HTTP GET requests.
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -140,6 +144,12 @@ namespace StudentApi.Controllers
             }
 
             StudentDataSimulation.StudentsList.Remove(student);
+            _logger.LogInformation(
+                  "Admin action executed. AdminId={AdminId}, Action=DeleteStudent, TargetId={TargetId}",
+                  User.FindFirstValue(ClaimTypes.NameIdentifier),
+                  student.Id
+                 );
+
             return Ok($"Student with ID {id} has been deleted.");
         }
 
