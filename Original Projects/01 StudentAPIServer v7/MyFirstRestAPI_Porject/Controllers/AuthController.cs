@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using StudentApi.DataSimulation;
 using StudentApi.DTOs.Auth;
@@ -8,6 +7,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace StudentApi.Controllers
 {
@@ -34,7 +34,7 @@ namespace StudentApi.Controllers
                 issuer: "AtlasSchool",
                 audience: "students",
                 claims: payload,
-                expires: DateTime.UtcNow.AddSeconds(10),
+                expires: DateTime.UtcNow.AddMinutes(10),
                 signingCredentials: Cred
               );
             var accessToken = new JwtSecurityTokenHandler().WriteToken(Token);
@@ -51,8 +51,11 @@ namespace StudentApi.Controllers
 
 
         [HttpPost("login")]
+        [EnableRateLimiting("AuthLimiter")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
+
         public IActionResult Login([FromBody]LoginRequest loginRequest)
         {
             var student  = StudentDataSimulation.StudentsList.Find((student)=>student.Email == loginRequest.Email);
@@ -71,8 +74,10 @@ namespace StudentApi.Controllers
         }
 
         [HttpPost("refresh")]
+        [EnableRateLimiting("AuthLimiter")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
         public IActionResult Refresh([FromBody] RefreshRequest refreshRequest)
         {
 
