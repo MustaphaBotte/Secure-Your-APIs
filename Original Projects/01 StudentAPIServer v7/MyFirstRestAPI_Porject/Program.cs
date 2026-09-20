@@ -10,6 +10,9 @@ using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var jwtKey = builder.Configuration["JWT_SECRET"]
+    ?? throw new InvalidOperationException("JWT key is missing.");
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -79,10 +82,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 
             ValidIssuer = "AtlasSchool",
 
-            ValidAudience = "students",
+            ValidAudience = "Students",
 
             IssuerSigningKey =
-                 new SymmetricSecurityKey(Encoding.UTF8.GetBytes("THIS_IS_A_VERY_SECRET_KEY_123456")),
+                 new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
 
             ClockSkew = TimeSpan.Zero
 

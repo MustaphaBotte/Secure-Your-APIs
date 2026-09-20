@@ -18,10 +18,12 @@ namespace StudentApi.Controllers
     public class AuthController : Controller
     {
         private readonly ILogger<AuthController> _logger;
+        private readonly IConfiguration _configuration;
 
-        public AuthController(ILogger<AuthController> logger)
+        public AuthController(ILogger<AuthController> logger, IConfiguration configuration)
         {
-            _logger = logger;            
+            _logger = logger;
+            _configuration = configuration;
         }
 
         private TokenResponse GenerateTokenResponse(Student student)
@@ -32,16 +34,21 @@ namespace StudentApi.Controllers
               new Claim(ClaimTypes.Role,student.Role)
             };
 
+         
 
-            var Key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("THIS_IS_A_VERY_SECRET_KEY_123456"));
+            var jwtKey = _configuration["JWT_SECRET"]
+                           ?? throw new InvalidOperationException("JWT key is missing.");    
+
+            var Key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
 
             var Cred = new SigningCredentials(Key, SecurityAlgorithms.HmacSha256);
 
             var Token = new JwtSecurityToken(
+
                 issuer: "AtlasSchool",
-                audience: "students",
+                audience: "Students",
                 claims: payload,
-                expires: DateTime.UtcNow.AddMinutes(10),
+                expires: DateTime.UtcNow.AddMinutes(15),
                 signingCredentials: Cred
               );
             var accessToken = new JwtSecurityTokenHandler().WriteToken(Token);
